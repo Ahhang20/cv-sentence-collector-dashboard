@@ -6,7 +6,7 @@ $locale  = "zh-HK";
 $fileTimeOut = 300; // seconds
 
 function loadLanguages() {
-	global $languages;
+	global $text, $languages;
 
 	$path = getcwd() . "/lang";
 	if (!is_dir($path)) {
@@ -14,16 +14,17 @@ function loadLanguages() {
 	}
 	foreach (glob($path . "/*.json") as $filename) {
 		$langCode = basename($filename, ".json");
-		$languages[$langCode] = json_decode(file_get_contents($filename), true);
+		$text[$langCode] = json_decode(file_get_contents($filename), true);
+		$languages[] = $langCode;
 	}
 }
 
 function t($source) {
-	global $languages, $locale;
+	global $text, $locale;
 
-	if (isset($languages[$locale])) {
-		if (array_key_exists($source, $languages[$locale])) {
-			return $languages[$locale][$source];
+	if (isset($text[$locale])) {
+		if (array_key_exists($source, $text[$locale])) {
+			return $text[$locale][$source];
 		}
 	}
 	return $source;
@@ -252,9 +253,12 @@ function groupByApprover($sentences) {
 	return $result;
 }
 
+loadLanguages();
+if (isset($_GET['lang']) and in_array($_GET['lang'], $languages)) {
+	$locale = $_GET['lang'];
+}
 getStatistics();
 getSentences();
-loadLanguages();
 
 /*** Contributor statistics ***/
 $contributors = groupBy($sentences, "username");
@@ -279,30 +283,39 @@ arsort($reviewers);
     <h1 class="text-center"><?php echo t("Sentence Collector Dashboard"); ?></h1>
     <div class="row">
       <div class="col">
+        <form method="get">
+          <select class="custom-select mb-3" name="lang" onchange="this.form.submit();">
+	    <?php foreach ($languages as $lang) {
+               echo "<option value=\"" . $lang . "\"";
+               if ($lang == $locale) { echo " selected";}
+               echo ">" . $lang . "</option>\n";
+             } ?>
+          </select>
+        </form>
         <div class="card text-center">
           <ul class="list-group list-group-flush">
             <li class="list-group-item">
               <h3><?php echo $statistics['total'];?></h3>
-              <p>sentences submitted</p>
+              <p><?php echo t("sentences submitted"); ?></p>
             </li>
             <li class="list-group-item">
               <h3 class="card-title" style="color: #0d0;"><?php echo $statistics['approved'];?></h3>
-              <p class="card-text">sentences approved</p>
+              <p class="card-text"><?php echo t("sentences approved"); ?></p>
             </li>
             <li class="list-group-item">
               <h3 class="card-title" style="color: #f00;"><?php echo $statistics['rejected'];?></h3>
-              <p class="card-text">sentences rejected</p>
+              <p class="card-text"><?php echo t("sentences rejected"); ?></p>
             </li>
             <li class="list-group-item">
               <h3 class="card-title" style="color: #ffa500;"><?php echo $statistics['reviewing'];?></h3>
-              <p class="card-text">sentences being reviewed</p>
+              <p class="card-text"><?php echo t("sentences being reviewed"); ?></p>
             </li>
           </ul>
         </div>
       </div>
       <div class="col-5">
         <div class="card">
-          <h3 class="card-header card-title">Top Contibutors</h3>
+          <h3 class="card-header card-title"><?php echo t("Top Contributors"); ?></h3>
           <div class="card-body" style="height: 400px;">
             <ul class="list-group overflow-auto h-100">
               <?php $i = 0; foreach ($contributors as $user => $count) { $i++; ?>
@@ -317,7 +330,7 @@ arsort($reviewers);
       </div>
       <div class="col-5">
          <div class="card">
-           <h3 class="card-header card-title">Top Reviewers</h3>
+           <h3 class="card-header card-title"><?php echo t("Top Reviewers"); ?></h3>
            <div class="card-body" style="height: 400px;">
              <ul class="list-group overflow-auto h-100">
                <?php $i = 0; foreach ($reviewers as $user => $count) { $i++; ?>
