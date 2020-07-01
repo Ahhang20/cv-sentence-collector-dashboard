@@ -263,58 +263,46 @@ foreach ($reviews as $user => $count) {
     <title>Sentence Collector Statistics</title>
   </head>
   <body class="container" style="background-color: #ddd;">
-    <h1 class="text-center">Sentence Collector Statistics</h1>
+    <h1 class="text-center">Sentence Collector Dashboard</h1>
     <div class="row">
-      <div class="col-sm mb-3">
+      <div class="col">
         <div class="card text-center">
-          <div class="card-body">
-            <h3 class="card-title"><?php echo $statistics['total'];?></h3>
-            <p class="card-text">sentences submitted</p>
+          <ul class="list-group list-group-flush">
+            <li class="list-group-item">
+              <h3><?php echo $statistics['total'];?></h3>
+              <p>sentences submitted</p>
+            </li>
+            <li class="list-group-item">
+              <h3 class="card-title" style="color: #0d0;"><?php echo $statistics['approved'];?></h3>
+              <p class="card-text">sentences approved</p>
+            </li>
+            <li class="list-group-item">
+              <h3 class="card-title" style="color: #f00;"><?php echo $statistics['rejected'];?></h3>
+              <p class="card-text">sentences rejected</p>
+            </li>
+            <li class="list-group-item">
+              <h3 class="card-title" style="color: #ffa500;"><?php echo $statistics['reviewing'];?></h3>
+              <p class="card-text">sentences being reviewed</p>
+            </li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-5">
+        <div class="card">
+          <h3 class="card-header card-title">Top Contibutors</h3>
+          <div class="card-body" style="height: 400px;">
+            <ul class="list-group overflow-auto h-100">
+              <?php $i = 0; foreach ($contributors as $user => $count) { $i++; ?>
+              <li class="list-group-item d-flex justify-content-between align-items-center">
+                <?php echo $i . ". " . $user;?>
+                <span class="badge badge-primary badge-pill"><?php echo $count;?></span>
+              </li>
+              <?php } ?>
+            </ul>
           </div>
         </div>
       </div>
-      <div class="col-sm mb-3">
-        <div class="card text-center">
-          <div class="card-body">
-            <h3 class="card-title" style="color: #0d0;"><?php echo $statistics['approved'];?></h3>
-            <p class="card-text">sentences approved</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm mb-3">
-        <div class="card text-center">
-          <div class="card-body">
-            <h3 class="card-title" style="color: #f00;"><?php echo $statistics['rejected'];?></h3>
-            <p class="card-text">sentences rejected</p>
-          </div>
-        </div>
-      </div>
-      <div class="col-sm mb-3">
-        <div class="card text-center">
-          <div class="card-body">
-            <h3 class="card-title" style="color: #ffa500;"><?php echo $statistics['reviewing'];?></h3>
-            <p class="card-text">sentences being reviewed</p>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-sm">
-         <div class="card">
-           <h3 class="card-header card-title">Top Contibutors</h3>
-           <div class="card-body" style="height: 400px;">
-             <ul class="list-group overflow-auto h-100">
-               <?php $i = 0; foreach ($contributors as $user => $count) { $i++; ?>
-               <li class="list-group-item d-flex justify-content-between align-items-center">
-                 <?php echo $i . ". " . $user;?>
-                 <span class="badge badge-primary badge-pill"><?php echo $count;?></span>
-               </li>
-               <?php } ?>
-             </ul>
-           </div>
-         </div>
-      </div>
-      <div class="col-sm">
+      <div class="col-5">
          <div class="card">
            <h3 class="card-header card-title">Top Reviewers</h3>
            <div class="card-body" style="height: 400px;">
