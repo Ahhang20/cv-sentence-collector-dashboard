@@ -5,6 +5,30 @@ $baseURL = "https://kinto.mozvoice.org/v1/buckets/App/collections/Sentences_Meta
 $locale  = "zh-HK";
 $fileTimeOut = 300; // seconds
 
+function loadLanguages() {
+	global $languages;
+
+	$path = getcwd() . "/lang";
+	if (!is_dir($path)) {
+		return;
+	}
+	foreach (glob($path . "/*.json") as $filename) {
+		$langCode = basename($filename, ".json");
+		$languages[$langCode] = json_decode(file_get_contents($filename), true);
+	}
+}
+
+function t($source) {
+	global $languages, $locale;
+
+	if (isset($languages[$locale])) {
+		if (array_key_exists($source, $languages[$locale])) {
+			return $languages[$locale][$source];
+		}
+	}
+	return $source;
+}
+
 function getStatistics() {
 	global $baseURL, $locale, $fileTimeOut, $statistics;
 
@@ -230,26 +254,15 @@ function groupByApprover($sentences) {
 
 getStatistics();
 getSentences();
+loadLanguages();
 
 /*** Contributor statistics ***/
 $contributors = groupBy($sentences, "username");
 arsort($contributors);
-/*
-echo "List of contributors<br/>";
-foreach ($contributors as $user => $count) {
-	echo $user . " submitted " . $count . " sentences.<br/>";
-}
-*/
 
 /*** Reviewer statistics ***/
 $reviewers = groupByApprover($sentences);
 arsort($reviewers);
-/*
-echo "List of reviews<br/>";
-foreach ($reviews as $user => $count) {
-	echo $user . " approved " . $count . " sentences.<br/>";
-}
-*/
 ?>
 <!doctype html>
 <html lang="en">
@@ -263,7 +276,7 @@ foreach ($reviews as $user => $count) {
     <title>Sentence Collector Statistics</title>
   </head>
   <body class="container" style="background-color: #ddd;">
-    <h1 class="text-center">Sentence Collector Dashboard</h1>
+    <h1 class="text-center"><?php echo t("Sentence Collector Dashboard"); ?></h1>
     <div class="row">
       <div class="col">
         <div class="card text-center">
